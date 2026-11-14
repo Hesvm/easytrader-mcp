@@ -588,6 +588,223 @@ export function createServer() {
     }
   );
 
+  // ---------------------------------------------------------
+  // 7. Credit & PointX (بسته اعتباری و باشگاه مشتریان پلکان/پوینت‌ایکس)
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_get_credit_info',
+    'Get user trading credit packages, PointX (Bashgah Mofid) balance, and active credit applications',
+    {
+      includeHistory: z.boolean().optional().default(false).describe('Whether to fetch PointX transaction history')
+    },
+    async ({ includeHistory }) => {
+      try {
+        const [points, packages, summary, history] = await Promise.allSettled([
+          api.getPointXBalance(),
+          api.getGrantableCreditPackages(),
+          api.getCreditApplicationsSummary(),
+          includeHistory ? api.getPointXHistory({ pageSize: 10 }) : Promise.resolve(null)
+        ]);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                pointX: points.status === 'fulfilled' ? points.value : null,
+                grantableCreditPackages: packages.status === 'fulfilled' ? packages.value : null,
+                applicationsSummary: summary.status === 'fulfilled' ? summary.value : null,
+                recentHistory: history?.status === 'fulfilled' ? history.value : null
+              }, null, 2)
+            }
+          ]
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
+  server.tool(
+    'easytrader_apply_credit',
+    'Apply for an official Mofid Securities trading credit package using PointX / Bashgah points',
+    {
+      packageId: z.string().describe('The ID of the credit package to apply for'),
+      applyPoint: z.boolean().optional().default(true).describe('Use points for discount/qualification')
+    },
+    async ({ packageId, applyPoint }) => {
+      try {
+        const result = await api.applyForCredit({ packageId, applyPoint });
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
+  // ---------------------------------------------------------
+  // 8. MofidCard & Debit Card Wallet (مفید کارت)
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_get_mofidcard',
+    'Check MofidCard bank debit card balance (Rials), linked Sheba, national code, and card status',
+    {},
+    async () => {
+      try {
+        const [balance, userInfo] = await Promise.allSettled([
+          api.getMofidCardBalance(),
+          api.getMofidCardUserInfo()
+        ]);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                cardBalance: balance.status === 'fulfilled' ? balance.value : null,
+                cardUserInfo: userInfo.status === 'fulfilled' ? userInfo.value : null
+              }, null, 2)
+            }
+          ]
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
+  // ---------------------------------------------------------
+  // 9. Derivatives & Options (قراردادهای اختیار معامله)
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_get_options',
+    'Get user open option positions (قراردادهای اختیار خرید و فروش) and physical/cash settlement status',
+    {},
+    async () => {
+      try {
+        const [positions, settlements] = await Promise.allSettled([
+          api.getOptionPositions(),
+          api.getOptionSettlementStatus()
+        ]);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                openPositions: positions.status === 'fulfilled' ? positions.value : null,
+                settlementStatus: settlements.status === 'fulfilled' ? settlements.value : null
+              }, null, 2)
+            }
+          ]
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
+  // ---------------------------------------------------------
+  // 10. Fund Issuance & Redemption (صدور و ابطال واحدهای سرمایه‌گذاری)
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_manage_fund_units',
+    'Perform issuance (صدور) or redemption (ابطال) of Mofid investment fund units, or check transaction history',
+    {
+      action: z.enum(['issuance', 'redeem', 'transactions']).describe('Action: issuance (buy), redeem (sell), or transactions'),
+      fundCode: z.string().describe('Fund Code (e.g. "10762" for Momtaz, or fund code from easytrader_get_funds)'),
+      amount: z.number().optional().describe('Amount in Rials for issuance (required if action="issuance")'),
+      unitCount: z.number().optional().describe('Number of fund units to redeem (required if action="redeem")')
+    },
+    async ({ action, fundCode, amount, unitCount }) => {
+      try {
+        if (action === 'transactions') {
+          const txs = await api.getFundTransactions(fundCode);
+          return { content: [{ type: 'text', text: JSON.stringify(txs, null, 2) }] };
+        } else if (action === 'issuance') {
+          if (!amount) throw new Error('amount is required for fund unit issuance');
+          const res = await api.issueFundUnits({ fundCode, amount });
+          return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+        } else if (action === 'redeem') {
+          if (!unitCount) throw new Error('unitCount is required for fund unit redemption');
+          const res = await api.redeemFundUnits({ fundCode, unitCount });
+          return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+        }
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
+  // ---------------------------------------------------------
+  // 11. Batch Symbol Quotes & Realtime Watchlist
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_get_batch_quotes',
+    'Fetch real-time TSE market quotes (closing price, last price, change %, bid/ask queue, limits) for multiple tickers in a single call',
+    {
+      symbolIsins: z.array(z.string()).describe('List of Symbol ISINs (e.g. ["IRO1TAMN0001", "IRO1SAPA0001"])')
+    },
+    async ({ symbolIsins }) => {
+      try {
+        const data = await api.getBatchQuotes(symbolIsins);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(data, null, 2) }]
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
+  // ---------------------------------------------------------
+  // 12. App Settings & Trading Configuration
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_client_settings',
+    'Get or update EasyTrader client trading settings (buy/sell default volume, tick sizes, theme, price presets)',
+    {
+      action: z.enum(['get', 'update']).default('get').describe('Action: "get" to read current settings, "update" to modify'),
+      settings: z.record(z.any()).optional().describe('Settings object to update when action="update"')
+    },
+    async ({ action, settings }) => {
+      try {
+        if (action === 'get') {
+          const current = await api.getClientAppSettings();
+          return { content: [{ type: 'text', text: JSON.stringify(current, null, 2) }] };
+        } else {
+          if (!settings) throw new Error('settings object is required when action="update"');
+          const res = await api.updateClientAppSettings(settings);
+          return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+        }
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
   return server;
 }
 

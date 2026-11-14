@@ -12,9 +12,37 @@ EasyTrader MCP is an open-source, local-first integration bridge built on Anthro
 - **Automated Order Execution (Read & Write)**: Send buy and sell orders, update active orders in the queue, cancel orders, and stage zero-risk pre-order drafts.
 - **Exchange Supervisor Announcements**: Stream real-time TSE supervisor messages (پیام ناظر بازار), trading halts, and reopening alerts.
 
+
+## All 25 Supported Tools Overview
+1. `easytrader_auth_status`: Validate active session token and profile brief.
+2. `easytrader_update_session`: Dynamically update Bearer token without restart.
+3. `easytrader_get_account_balance`: T0/T1/T2 purchasing power, Hami fund, bank balances.
+4. `easytrader_get_transactions`: Detailed accounting ledger and cash flow history.
+5. `easytrader_get_portfolio`: Portfolio performance, holdings, breakeven cost, DPS.
+6. `easytrader_get_funds`: Mutual fund assets and list of all Mofid funds.
+7. `easytrader_get_market_overview`: TSE live summary, Overall Index, market volume.
+8. `easytrader_get_market_map`: Full market sector heatmap & real-time variations.
+9. `easytrader_get_easyfilter_data`: Algorithmic filters and 2,234 stock metrics (RSI, MFI, P/E).
+10. `easytrader_get_symbol_details`: Closing/last price, EPS, limits, 5-level orderbook.
+11. `easytrader_get_symbol_analysis`: Smart money flows (حقیقی/حقوقی), Codal, fundamentals.
+12. `easytrader_get_orders`: Active orders in market book and historical order reports.
+13. `easytrader_send_order`: Buy (0) or Sell (1) order submission with validity options.
+14. `easytrader_update_order`: In-queue price or quantity modifications.
+15. `easytrader_cancel_order`: Order revocation by ID.
+16. `easytrader_get_drafts`: Staged offline draft pre-orders.
+17. `easytrader_create_draft`: Staging offline drafts.
+18. `easytrader_get_notifications`: Supervisor messages (پیام ناظر) and NSC market alerts.
+19. `easytrader_get_credit_info`: PointX balance, Mofid credit packages, application status.
+20. `easytrader_apply_credit`: Application for official brokerage trading credit with points discount.
+21. `easytrader_get_mofidcard`: MofidCard debit balance, linked Sheba bank accounts, and card state.
+22. `easytrader_get_options`: Option contract positions (اختیار معامله) and settlement procedures.
+23. `easytrader_manage_fund_units`: Mutual fund issuance (صدور), redemption (ابطال), and transactions.
+24. `easytrader_get_batch_quotes`: High-throughput multi-ticker price updates in a single query.
+25. `easytrader_client_settings`: EasyTrader web app configuration and trading defaults.
+
 ## Primary Documentation & Quick Links
 - [Repository & Source Code](https://github.com/Hesvm/easytrader-mcp): Official GitHub repository.
-- [Available MCP Tools](https://github.com/Hesvm/easytrader-mcp#%EF%B8%8F-available-mcp-tools): Complete schema of 18 Read/Write MCP tools.
+- [Available MCP Tools](https://github.com/Hesvm/easytrader-mcp#%EF%B8%8F-available-mcp-tools): Complete schema of 25 Read/Write MCP tools (Trading, Credit, MofidCard, Options, Funds, Settings).
 - [Client Configuration Guide](https://github.com/Hesvm/easytrader-mcp#-client-configurations): Instructions for Antigravity, Claude Desktop, and Cursor.
 - [Security & Architecture](https://github.com/Hesvm/easytrader-mcp#-security--privacy-first): Local-first, zero-password-storage security model.
 

@@ -100,6 +100,13 @@ Empower your agent to act with surgical precision. Dispatch live orders directly
 | `easytrader_get_drafts` | `Read` | Lists saved offline pre-order drafts. |
 | `easytrader_create_draft` | `Write` | Stages an order as an offline draft for manual verification in the UI. |
 | `easytrader_get_notifications` | `Read` | Fetches exchange supervisor alerts (پیام ناظر) and NSC market notifications. |
+| `easytrader_get_credit_info` | `Read` | Fetches Mofid credit packages, Bashgah PointX balance, and credit application status. |
+| `easytrader_apply_credit` | `Write` | Applies for Mofid Securities trading credit package using club points. |
+| `easytrader_get_mofidcard` | `Read` | Returns MofidCard balance (Rials), linked Sheba, card status, and debit info. |
+| `easytrader_get_options` | `Read` | Inspects open derivatives/option contracts (اختیار معامله) and physical/cash settlement status. |
+| `easytrader_manage_fund_units` | `Write` | Direct issuance (صدور), redemption (ابطال), or ledger tracking for Mofid investment funds. |
+| `easytrader_get_batch_quotes` | `Read` | High-speed multi-symbol quote retrieval (closing/last price, queue, limits) in 1 network call. |
+| `easytrader_client_settings` | `Write` | Reads or updates trader settings (theme, default buy/sell quantities, tick sizes). |
 
 ---
 

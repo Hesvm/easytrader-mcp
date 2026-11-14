@@ -321,3 +321,154 @@ export async function getNscNotifications({ from, to, symbolIsin } = {}) {
   const res = await client.get(url);
   return res.data;
 }
+
+// ---------------------------------------------------------
+// 7. Credit & PointX (اعتبار و امتیاز باشگاه مشتریان)
+// ---------------------------------------------------------
+
+export async function getCreditApplicationsSummary() {
+  const client = createApiClient();
+  const res = await client.get('/credit/api/creditApplications/summary');
+  return res.data;
+}
+
+export async function getGrantableCreditPackages() {
+  const client = createApiClient();
+  const res = await client.get('/credit/api/GrantableCreditWithPackages?applyPoint=true');
+  return res.data;
+}
+
+export async function getCreditApplications({ pageSize = 20, pageNumber = 1, activeMode = true } = {}) {
+  const client = createApiClient();
+  const res = await client.get(`/credit/api/creditApplications?pageSize=${pageSize}&pageNumber=${pageNumber}&activeMode=${activeMode}`);
+  return res.data;
+}
+
+export async function applyForCredit({ packageId, applyPoint = true }) {
+  const client = createApiClient();
+  const res = await client.post('/credit/api/creditApplications', {
+    packageId,
+    applyPoint
+  });
+  return res.data;
+}
+
+export async function getPointXBalance() {
+  const client = createApiClient();
+  const res = await client.get('/credit/api/pointxPoint');
+  return res.data;
+}
+
+export async function getPointXHistory({ pageSize = 20, pageIndex = 1 } = {}) {
+  const client = createApiClient();
+  const res = await client.get(`/credit/api/pointxHistory?pageSize=${pageSize}&pageIndex=${pageIndex}`);
+  return res.data;
+}
+
+export async function getCreditGifts() {
+  const client = createApiClient();
+  const res = await client.get('/credit/api/creditGifts');
+  return res.data;
+}
+
+// ---------------------------------------------------------
+// 8. MofidCard / Debit Card & Wallet (مفید کارت و کیف پول)
+// ---------------------------------------------------------
+
+export async function getMofidCardBalance() {
+  const client = createApiClient();
+  const res = await client.get('/mofidcard/api/balance');
+  return res.data;
+}
+
+export async function getMofidCardUserInfo() {
+  const client = createApiClient();
+  const res = await client.get('/mofidcard/api/user-info');
+  return res.data;
+}
+
+export async function getMofidCardRegisterInfo() {
+  const client = createApiClient();
+  const res = await client.get('/mofidcard/api/register-info');
+  return res.data;
+}
+
+// ---------------------------------------------------------
+// 9. Derivatives & Options (معاملات ابزارهای مشتقه و اختیار معامله)
+// ---------------------------------------------------------
+
+export async function getOptionPositions() {
+  const client = createApiClient();
+  const res = await client.get('/option/api/Positions');
+  return res.data;
+}
+
+export async function getOptionSettlementStatus() {
+  const client = createApiClient();
+  const res = await client.get('/option/api/Positions/settlements/gathering/status');
+  return res.data;
+}
+
+export async function getOptionMarketMap(type = 0) {
+  const client = createApiClient();
+  const res = await client.get(`/symbols/api/OptionMarketData/${type}/Map`);
+  return res.data;
+}
+
+// ---------------------------------------------------------
+// 10. Mutual Fund Issuance & Redemption (صدور و ابطال واحدهای صندوق)
+// ---------------------------------------------------------
+
+export async function getFundTransactions(fundCode) {
+  const client = createApiClient();
+  const url = fundCode ? `/fundvtwo/api/transactions/${fundCode}` : '/fundvtwo/api/allTransactions/';
+  const res = await client.get(url);
+  return res.data;
+}
+
+export async function issueFundUnits({ fundCode, amount, paymentMethod = 'Balance' }) {
+  const client = createApiClient();
+  const res = await client.post('/fundvtwo/api/issuance', {
+    fundCode,
+    amount,
+    paymentMethod
+  });
+  return res.data;
+}
+
+export async function redeemFundUnits({ fundCode, unitCount }) {
+  const client = createApiClient();
+  const res = await client.post('/fundvtwo/api/redeem', {
+    fundCode,
+    units: unitCount
+  });
+  return res.data;
+}
+
+// ---------------------------------------------------------
+// 11. Batch Market Quotes & Quick Symbol Search
+// ---------------------------------------------------------
+
+export async function getBatchQuotes(isins) {
+  const client = createApiClient();
+  const isinList = Array.isArray(isins) ? isins : [isins];
+  const res = await client.post('/symbols/api/marketdata/v2', isinList);
+  return res.data;
+}
+
+
+// ---------------------------------------------------------
+// 12. App Settings & Customization (تنظیمات کاربر در ایزی‌تریدر)
+// ---------------------------------------------------------
+
+export async function getClientAppSettings() {
+  const client = createApiClient();
+  const res = await client.get('/easy/api/clientAppSetting');
+  return res.data;
+}
+
+export async function updateClientAppSettings(settings) {
+  const client = createApiClient();
+  const res = await client.post('/easy/api/clientAppSetting', settings);
+  return res.data;
+}
