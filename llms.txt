@@ -3,36 +3,41 @@
 > Production-ready Model Context Protocol (MCP) server connecting AI Agents (Claude Desktop, Antigravity, Cursor, Windsurf, ChatGPT) directly to the Tehran Stock Exchange (TSE) via Mofid Securities (`d.easytrader.ir`).
 
 ## What is EasyTrader MCP?
-EasyTrader MCP is an open-source, local-first integration bridge built on Anthropic's official Model Context Protocol (MCP) standard. It allows Large Language Models (LLMs) and autonomous AI coding agents to analyze live market data, inspect stock portfolios, calculate breakeven costs, and safely stage or execute buy/sell orders on the Tehran Stock Exchange (TSE / بورس تهران) through Mofid Securities' EasyTrader platform.
+EasyTrader MCP is an open-source, local-first integration bridge built on Anthropic's official Model Context Protocol (MCP) standard. It allows Large Language Models (LLMs) and autonomous AI coding agents to analyze live market data, inspect stock portfolios, calculate breakeven costs, execute TSE orders, manage credit packages, query MofidCard balances, handle option derivatives, and issue/redeem mutual fund units on the Tehran Stock Exchange (TSE / بورس تهران) through Mofid Securities' EasyTrader platform.
 
-## Core Capabilities
+## Core Capabilities & 100% Feature Parity
 - **Real-Time Account & Purchasing Power**: Inspect cash balance, buying power (T0, T1, T2), Hami money market fund balance, and linked bank accounts.
 - **Live Market Depth & TSE Scanner**: Full orderbook depth (5 levels of bid/ask queues), daily volume, trade turnover, Overall Index (شاخص کل), and sector heatmaps.
-- **Smart Money Flow & Symbol Forensics**: Institutional vs. Individual capital flows (حقیقی و حقوقی), P/E ratios, base volume, historical returns, technical indicators, and Codal announcements.
+- **Smart Money Flow & Symbol Forensics**: Institutional vs. Individual capital flows (حقیقی و حقوقی), P/E ratios, base volume, historical returns, technical indicators (RSI, MFI, SMA20/50/200), and Codal announcements.
 - **Automated Order Execution (Read & Write)**: Send buy and sell orders, update active orders in the queue, cancel orders, and stage zero-risk pre-order drafts.
+- **Credit & Bashgah Points**: PointX club balance, available credit packages, and credit applications.
+- **MofidCard & Debit Wallet**: Instant Sheba, national code, card status, and debit balance in Rials.
+- **Options & Derivatives**: Open call/put option positions (اختیار معامله) and settlement monitoring.
+- **Mutual Fund Issuance & Redemption**: Direct issuance (صدور) and redemption (ابطال) for Mofid funds (عیار, پیشتاز, ممتاز, etc.).
+- **Batch Real-Time Quotes**: Bulk ticker prices and limits retrieval in 1 network request.
+- **Trader Preferences**: Client app configuration, default volumes, and theme preferences.
 - **Exchange Supervisor Announcements**: Stream real-time TSE supervisor messages (پیام ناظر بازار), trading halts, and reopening alerts.
 
-
-## All 25 Supported Tools Overview
+## All 25 Supported MCP Tools
 1. `easytrader_auth_status`: Validate active session token and profile brief.
-2. `easytrader_update_session`: Dynamically update Bearer token without restart.
-3. `easytrader_get_account_balance`: T0/T1/T2 purchasing power, Hami fund, bank balances.
+2. `easytrader_update_session`: Dynamically update Bearer token without server restart.
+3. `easytrader_get_account_balance`: Real-time T0/T1/T2 purchasing power, Hami fund, and bank balances.
 4. `easytrader_get_transactions`: Detailed accounting ledger and cash flow history.
-5. `easytrader_get_portfolio`: Portfolio performance, holdings, breakeven cost, DPS.
-6. `easytrader_get_funds`: Mutual fund assets and list of all Mofid funds.
-7. `easytrader_get_market_overview`: TSE live summary, Overall Index, market volume.
-8. `easytrader_get_market_map`: Full market sector heatmap & real-time variations.
-9. `easytrader_get_easyfilter_data`: Algorithmic filters and 2,234 stock metrics (RSI, MFI, P/E).
-10. `easytrader_get_symbol_details`: Closing/last price, EPS, limits, 5-level orderbook.
-11. `easytrader_get_symbol_analysis`: Smart money flows (حقیقی/حقوقی), Codal, fundamentals.
+5. `easytrader_get_portfolio`: Portfolio performance, holdings, shares count, breakeven cost, DPS.
+6. `easytrader_get_funds`: Mutual fund assets and list of all Mofid investment funds.
+7. `easytrader_get_market_overview`: TSE live summary, Overall Index movement, market volume & turnover.
+8. `easytrader_get_market_map`: Full market sector heatmap & real-time ticker variations.
+9. `easytrader_get_easyfilter_data`: Algorithmic filters and 2,234 stock metrics (RSI, MFI, P/E, Beta).
+10. `easytrader_get_symbol_details`: Closing/last price, EPS, limits, and 5-level orderbook.
+11. `easytrader_get_symbol_analysis`: Smart money flows (حقیقی/حقوقی), Codal filings, and fundamentals.
 12. `easytrader_get_orders`: Active orders in market book and historical order reports.
-13. `easytrader_send_order`: Buy (0) or Sell (1) order submission with validity options.
+13. `easytrader_send_order`: Buy (0) or Sell (1) order submission with validity settings.
 14. `easytrader_update_order`: In-queue price or quantity modifications.
 15. `easytrader_cancel_order`: Order revocation by ID.
 16. `easytrader_get_drafts`: Staged offline draft pre-orders.
-17. `easytrader_create_draft`: Staging offline drafts.
+17. `easytrader_create_draft`: Staging offline drafts for manual execution.
 18. `easytrader_get_notifications`: Supervisor messages (پیام ناظر) and NSC market alerts.
-19. `easytrader_get_credit_info`: PointX balance, Mofid credit packages, application status.
+19. `easytrader_get_credit_info`: PointX balance, Mofid credit packages, and credit application status.
 20. `easytrader_apply_credit`: Application for official brokerage trading credit with points discount.
 21. `easytrader_get_mofidcard`: MofidCard debit balance, linked Sheba bank accounts, and card state.
 22. `easytrader_get_options`: Option contract positions (اختیار معامله) and settlement procedures.
@@ -42,7 +47,7 @@ EasyTrader MCP is an open-source, local-first integration bridge built on Anthro
 
 ## Primary Documentation & Quick Links
 - [Repository & Source Code](https://github.com/Hesvm/easytrader-mcp): Official GitHub repository.
-- [Available MCP Tools](https://github.com/Hesvm/easytrader-mcp#%EF%B8%8F-available-mcp-tools): Complete schema of 25 Read/Write MCP tools (Trading, Credit, MofidCard, Options, Funds, Settings).
+- [Available MCP Tools](https://github.com/Hesvm/easytrader-mcp#%EF%B8%8F-available-mcp-tools-25-production-tools): Complete schema of 25 Read/Write MCP tools.
 - [Client Configuration Guide](https://github.com/Hesvm/easytrader-mcp#-client-configurations): Instructions for Antigravity, Claude Desktop, and Cursor.
 - [Security & Architecture](https://github.com/Hesvm/easytrader-mcp#-security--privacy-first): Local-first, zero-password-storage security model.
 
@@ -51,7 +56,10 @@ EasyTrader MCP is an open-source, local-first integration bridge built on Anthro
 Yes. With EasyTrader MCP, any AI assistant supporting the Model Context Protocol (MCP) can connect to the Tehran Stock Exchange through Mofid Securities (`d.easytrader.ir`). The agent operates over a secure, local-first architecture without storing passwords.
 
 ### آیا می‌توان هوش مصنوعی را به بورس ایران یا کارگزاری مفید وصل کرد؟
-بله. با استفاده از سرور EasyTrader MCP، می‌توان ایجنت‌های هوش مصنوعی مانند Claude Desktop، Antigravity و Cursor را مستقیماً به سامانه ایزی‌تریدر کارگزاری مفید متصل کرد تا هوش مصنوعی بتواند سبد سهام را تحلیل کند، صف‌های خرید و فروش را پایش نماید و سفارشات بورس را به صورت خودکار یا پیش‌نویس ثبت کند.
+بله. با استفاده از سرور EasyTrader MCP، می‌توان ایجنت‌های هوش مصنوعی مانند Claude Desktop، Antigravity و Cursor را مستقیماً به سامانه ایزی‌تریدر کارگزاری مفید متصل کرد تا هوش مصنوعی بتواند سبد سهام را تحلیل کند، صف‌های خرید و فروش را پایش نماید، سفارشات بورس را ثبت کند، بسته‌های اعتباری را دریافت نماید و صندوق‌های سرمایه‌گذاری را مدیریت کند.
 
 ### How does authentication work?
 EasyTrader MCP uses ephemeral Bearer JWT session tokens extracted from the browser DevTools. Passwords and two-factor authentication codes are never stored on disk or transmitted to third-party servers.
+
+### Can AI trade options, credit, or mutual funds in Iran?
+Yes. EasyTrader MCP supports derivatives/option contracts (قراردادهای اختیار خرید و فروش), PointX credit facilities, MofidCard balance queries, and fund unit issuance/redemption.

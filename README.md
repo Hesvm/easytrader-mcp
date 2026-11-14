@@ -78,7 +78,20 @@ Empower your agent to act with surgical precision. Dispatch live orders directly
 
 ---
 
-## 🛠️ Available MCP Tools
+### 4. Credit, PointX Club, MofidCard & Derivatives (100% Feature Parity)
+
+Full-spectrum access to Mofid Securities advanced ecosystem. Manage trading credit facilities, check MofidCard debit balances, track derivative option contracts, and execute fund issuance/redemption directly from the prompt.
+
+- `easytrader_get_credit_info` & `easytrader_apply_credit`: Check club points, browse credit packages, and submit credit applications.
+- `easytrader_get_mofidcard`: Real-time MofidCard debit balance, linked Sheba, and card holder verification.
+- `easytrader_get_options`: Derivatives positions (قراردادهای اختیار معامله) and physical/cash settlement status.
+- `easytrader_manage_fund_units`: Mutual fund unit issuance (صدور) and redemption (ابطال).
+- `easytrader_get_batch_quotes`: High-speed batch ticker quotes in a single network request.
+- `easytrader_client_settings`: Inspect and customize client trading defaults (volumes, themes, tick sizes).
+
+---
+
+## 🛠️ Available MCP Tools (25 Production Tools)
 
 | Tool | Type | Description |
 |---|---|---|
@@ -212,7 +225,13 @@ Financial data requires uncompromised security. EasyTrader MCP is engineered wit
 Unlike brittle web scrapers that break on layout changes and trigger anti-bot protections, EasyTrader MCP directly communicates with EasyTrader's underlying REST APIs (`api-mts.orbis.easytrader.ir`) using official JSON payloads, full TypeScript/Zod schemas, and authentic session headers.
 
 ### Q4: نحوه ساخت ربات معامله‌گر با هوش مصنوعی در بورس ایران چگونه است؟
-با راه‌اندازی این سرور MCP، نیازی به کدنویسی پیچیده وب‌سرویس‌های OMS ندارید. کافی است این سرور را در کلاینت مد نظر خود (مثلاً کلود دسکتاپ یا کورسور) تعریف کنید؛ ایجنت هوش مصنوعی به ۱۸ ابزار تخصصی (شامل ارسال سفارش، لغو سفارش، دریافت قدرت خرید، بررسی صف‌ها و پیام ناظر) مجهز می‌شود و می‌تواند به عنوان یک دستیار الگوریتمی تمام‌عیار در کنار شما عمل کند.
+با راه‌اندازی این سرور MCP، نیازی به کدنویسی پیچیده وب‌سرویس‌های OMS یا کار با پروتکل‌های پیچیده ندارید. کافی است این سرور را در کلاینت مد نظر خود (مثلاً کلود دسکتاپ، کورسور یا آنتی‌گرویتی) تعریف کنید؛ ایجنت هوش مصنوعی به **۲۵ ابزار تخصصی** (شامل ارسال و ویرایش سفارش، قدرت خرید لحظه‌ای، دریافت صف‌ها و تابلو، صندوق‌های طلا و درآمد ثابت، دریافت اعتبار و پوینت‌ایکس، مفیدکارت، قراردادهای آپشن و فیلترهای تکنیکال) مجهز می‌شود و به عنوان یک همیار معاملاتی خودکار عمل می‌کند.
+
+### Q5: آیا هوش مصنوعی می‌تواند به مفید کارت، بسته‌های اعتباری یا اختیار معامله (آپشن) دسترسی داشته باشد؟
+**بله.** نسخه ۱.۰.۰ ایزی‌تریدر MCP به پوشش ۱۰۰٪ تمام فیچرهای ایزی‌تریدر ارتقا یافته است. هوش مصنوعی می‌تواند مانده مفید کارت شتابی شما را استعلام کند، بسته‌های اعتباری قابل دریافت و امتیازات باشگاه پوینت‌ایکس را بررسی کند، برای دریافت اعتبار درخواست ثبت کند، موقعیت‌های باز قراردادهای اختیار معامله (آپشن) و تسویه را گزارش دهد و واحدهای صندوق‌های سرمایه‌گذاری را مستقیماً صدور یا ابطال کند.
+
+### Q6: Can AI trade derivatives, options contracts, or mutual funds on the Tehran Stock Exchange?
+**Yes.** EasyTrader MCP provides full tool support for TSE option contracts (قراردادهای اختیار خرید و فروش), physical and cash settlements, and direct unit issuance/redemption for Mofid mutual and gold funds (مثل صندوق طلای عیار و پیشتاز).
 
 ---
 
