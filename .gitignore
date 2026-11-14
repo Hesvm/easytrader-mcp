@@ -1,0 +1,5 @@
+node_modules/
+.env
+.easytrader-session.json
+*.har
+.DS_Store

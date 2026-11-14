@@ -1,0 +1,33 @@
+{
+  "name": "easytrader-mcp",
+  "version": "1.0.0",
+  "description": "Production-ready Model Context Protocol (MCP) Server for EasyTrader (Mofid Securities / d.easytrader.ir)",
+  "main": "src/index.js",
+  "type": "module",
+  "bin": {
+    "easytrader-mcp": "./bin/cli.js"
+  },
+  "scripts": {
+    "start": "node ./bin/cli.js",
+    "test": "node src/test-connection.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "easytrader",
+    "emofid",
+    "tsetmc",
+    "bourse",
+    "iran-stock-market",
+    "trading",
+    "agentic-ai"
+  ],
+  "author": "Hesam",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.1",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "zod": "^3.24.1"
+  }
+}
