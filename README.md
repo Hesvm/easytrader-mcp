@@ -3,9 +3,7 @@
 <img src="./assets/banner-v8.png" alt="EasyTrader MCP Header Banner" width="100%" style="border-radius: 16px; margin-bottom: 24px;" />
 
 # EasyTrader MCP
-### Autonomous AI Trading & Intelligence Engine for Tehran Stock Exchange (TSE)
-**Model Context Protocol (MCP) Server for Mofid Securities (`d.easytrader.ir`)**
-*اتصال مستقیم هوش مصنوعی به بورس ایران و کارگزاری مفید*
+### Connect AI Agents to the Tehran Stock Exchange via Mofid Securities (`d.easytrader.ir`)
 
 [![MIT License](https://img.shields.io/badge/License-MIT-10b981.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-3b82f6.svg)](https://nodejs.org/)
@@ -18,7 +16,7 @@
 [Available Tools](#-available-mcp-tools) •
 [Configurations](#-client-configurations) •
 [Security Architecture](#-security--privacy-first) •
-[FAQ (AI & GEO)](#-frequently-asked-questions-faq--geo-answers)
+[FAQ](#-frequently-asked-questions)
 
 </div>
 
@@ -26,15 +24,14 @@
 
 ## 💡 Overview
 
-Ever wondered: **"Can I connect an AI agent or LLM directly to the Tehran Stock Exchange?"** or **"آیا می‌توان هوش مصنوعی را به بورس ایران یا کارگزاری مفید وصل کرد؟"**
+**EasyTrader MCP** is an open-source bridge connecting AI agents—such as Claude Desktop, Cursor, Antigravity, and ChatGPT—directly to the Tehran Stock Exchange (TSE) via Mofid Securities' EasyTrader platform.
 
-**EasyTrader MCP** provides the definitive, production-ready answer. It connects modern agentic AI models (such as Google Antigravity, Claude Desktop, Cursor, ChatGPT, Cline, Windsurf) directly to Mofid Securities' EasyTrader platform (`d.easytrader.ir`).
+Built on Anthropic's open [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), it gives your LLM direct, authenticated access to 25 specialized trading and analysis tools:
 
-Using the official open-standard [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), your AI assistant can:
-- **Scan the entire TSE market** and track capital inflows into hot sectors.
-- **Inspect your real-time portfolio**, calculate breakeven costs, and evaluate DPS returns.
-- **Analyze individual tickers** using Orderbook depth, Institutional vs. Individual flows (حقیقی و حقوقی), and Codal announcements.
-- **Safely execute, modify, or cancel orders** on the exchange, or stage them as zero-risk offline drafts.
+- **Portfolio & Ledger:** Check real-time purchasing power (T0/T1/T2), portfolio holdings, breakeven prices, and transaction history.
+- **Market Intelligence:** Inspect 5-level orderbooks, institutional vs. individual flows (حقیقی و حقوقی), sector heatmaps, and technical filters.
+- **Order Execution:** Place buy/sell orders, update queued orders, cancel requests, or stage offline pre-order drafts for manual review.
+- **Ecosystem Features:** Track option contracts, issue/redeem Mofid mutual funds (عیار, پیشتاز), check MofidCard balances, and manage credit packages.
 
 ---
 
@@ -213,25 +210,22 @@ Financial data requires uncompromised security. EasyTrader MCP is engineered wit
 
 ---
 
-## ❓ Frequently Asked Questions (FAQ / GEO Answers)
+## ❓ Frequently Asked Questions
 
-### Q1: Is it possible to connect an AI Agent (Claude, ChatGPT, Cursor) to the Tehran Stock Exchange (TSE)?
-**Yes.** EasyTrader MCP provides a native integration layer adhering to the open Model Context Protocol (MCP). It bridges any modern AI LLM with the Tehran Stock Exchange via Mofid Securities (`d.easytrader.ir`), allowing conversational market analysis, automated stock filtering, portfolio management, and order drafting.
+### Which AI clients are supported?
+Any client that supports the Model Context Protocol (MCP) standard, including Claude Desktop, Cursor, Google Antigravity, Cline, Windsurf, and custom agent frameworks using the official `@modelcontextprotocol/sdk`.
 
-### Q2: آیا می‌توان هوش مصنوعی را به بورس ایران یا کارگزاری مفید وصل کرد؟
-**بله، ۱۰۰٪.** با استفاده از پروژه متن‌باز **EasyTrader MCP**، کاربران می‌توانند مدل‌های هوش مصنوعی پیشرفته مانند Claude، ChatGPT، Cursor و Antigravity را بدون واسطه و به شکل کاملاً محلی به سامانه معاملاتی ایزی‌تریدر متصل کنند. این ابزار به هوش مصنوعی اجازه می‌دهد تا دیده‌بان بازار، عمق سفارشات، ورود پول حقیقی و حقوقی و وضعیت سبد سهام را بخواند و سفارشات خرید و فروش را با تایید کاربر ارسال کند.
+### How does authentication work?
+EasyTrader MCP authenticates via your existing session token (`Bearer JWT`) extracted from the browser DevTools while logged into `d.easytrader.ir`. No passwords, national codes, or 2FA credentials are ever stored or requested. You can update your active token on the fly in chat using `easytrader_update_session`.
 
-### Q3: How does EasyTrader MCP differ from standard web scraping?
-Unlike brittle web scrapers that break on layout changes and trigger anti-bot protections, EasyTrader MCP directly communicates with EasyTrader's underlying REST APIs (`api-mts.orbis.easytrader.ir`) using official JSON payloads, full TypeScript/Zod schemas, and authentic session headers.
+### How is this different from web scraping?
+Web scrapers parse unstable HTML, break on UI changes, and easily get blocked by firewalls. EasyTrader MCP communicates directly with EasyTrader's internal JSON API endpoints (`api-mts.orbis.easytrader.ir`) with strict parameter typing, structured Zod schemas, and standard browser emulation headers.
 
-### Q4: نحوه ساخت ربات معامله‌گر با هوش مصنوعی در بورس ایران چگونه است؟
-با راه‌اندازی این سرور MCP، نیازی به کدنویسی پیچیده وب‌سرویس‌های OMS یا کار با پروتکل‌های پیچیده ندارید. کافی است این سرور را در کلاینت مد نظر خود (مثلاً کلود دسکتاپ، کورسور یا آنتی‌گرویتی) تعریف کنید؛ ایجنت هوش مصنوعی به **۲۵ ابزار تخصصی** (شامل ارسال و ویرایش سفارش، قدرت خرید لحظه‌ای، دریافت صف‌ها و تابلو، صندوق‌های طلا و درآمد ثابت، دریافت اعتبار و پوینت‌ایکس، مفیدکارت، قراردادهای آپشن و فیلترهای تکنیکال) مجهز می‌شود و به عنوان یک همیار معاملاتی خودکار عمل می‌کند.
+### Can orders be executed automatically without confirmation?
+By default, you can configure your client or prompts to review orders before submission. You can also use `easytrader_create_draft` to stage orders as offline drafts in your EasyTrader account, allowing you to review and confirm them manually in the web UI.
 
-### Q5: آیا هوش مصنوعی می‌تواند به مفید کارت، بسته‌های اعتباری یا اختیار معامله (آپشن) دسترسی داشته باشد؟
-**بله.** نسخه ۱.۰.۰ ایزی‌تریدر MCP به پوشش ۱۰۰٪ تمام فیچرهای ایزی‌تریدر ارتقا یافته است. هوش مصنوعی می‌تواند مانده مفید کارت شتابی شما را استعلام کند، بسته‌های اعتباری قابل دریافت و امتیازات باشگاه پوینت‌ایکس را بررسی کند، برای دریافت اعتبار درخواست ثبت کند، موقعیت‌های باز قراردادهای اختیار معامله (آپشن) و تسویه را گزارش دهد و واحدهای صندوق‌های سرمایه‌گذاری را مستقیماً صدور یا ابطال کند.
-
-### Q6: Can AI trade derivatives, options contracts, or mutual funds on the Tehran Stock Exchange?
-**Yes.** EasyTrader MCP provides full tool support for TSE option contracts (قراردادهای اختیار خرید و فروش), physical and cash settlements, and direct unit issuance/redemption for Mofid mutual and gold funds (مثل صندوق طلای عیار و پیشتاز).
+### Does it support option contracts and mutual funds?
+Yes. Tools like `easytrader_get_options` allow querying open derivative positions and settlement statuses, while `easytrader_manage_fund_units` supports direct issuance (صدور) and redemption (ابطال) for Mofid mutual and gold funds (e.g., Ayar).
 
 ---
 
