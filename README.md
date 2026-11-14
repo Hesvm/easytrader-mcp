@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/banner.png" alt="EasyTrader MCP Header Banner" width="100%" style="border-radius: 14px; margin-bottom: 24px;" />
+<img src="./assets/banner.png" alt="EasyTrader MCP Header Banner" width="100%" style="border-radius: 16px; margin-bottom: 24px;" />
 
 # EasyTrader MCP
 ### Autonomous AI Trading & Intelligence Engine for Tehran Stock Exchange (TSE)
@@ -12,10 +12,10 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-emerald.svg)](https://github.com/Hesvm/easytrader-mcp/pulls)
 
 [Overview](#-overview) •
-[Features](#-key-features) •
+[Features](#-core-capabilities) •
 [Quickstart](#-quickstart-in-30-seconds) •
 [Available Tools](#-available-mcp-tools) •
-[Client Configurations](#-client-configurations) •
+[Configurations](#-client-configurations) •
 [Security Architecture](#-security--privacy-first)
 
 </div>
@@ -26,7 +26,7 @@
 
 Ever wanted your AI coding agent or copilot to act as your **tireless personal trading desk** on the Tehran Stock Exchange?
 
-**EasyTrader MCP** connects modern agentic AI models (such as Antigravity, Claude Desktop, Cursor, Cline, Windsurf) directly to Mofid Securities' EasyTrader platform (`d.easytrader.ir`).
+**EasyTrader MCP** connects modern agentic AI models (such as Google Antigravity, Claude Desktop, Cursor, Cline, Windsurf) directly to Mofid Securities' EasyTrader platform (`d.easytrader.ir`).
 
 Using the official [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), your AI assistant can:
 - **Scan the entire market** and track capital inflows into hot sectors.
@@ -36,15 +36,70 @@ Using the official [Model Context Protocol (MCP)](https://modelcontextprotocol.i
 
 ---
 
-## ⚡ Key Features
+## ⚡ Core Capabilities
 
-- **💼 Real-Time Financials:** Instantly query T0/T1/T2 purchasing power, Hami money market fund balances, and linked bank accounts.
-- **📊 Portfolio & Asset Breakdown:** Real-time holdings valuation, average purchase prices, breakeven points, and today's intraday trading status.
-- **🔍 Market Live & Heatmap:** Comprehensive Tehran Stock Exchange overview, Overall Index status, market trade volume/value, and sector heatmaps.
-- **🔬 Deep Symbol Analytics:** Live orderbook depth (top 5 bids/asks), P/E ratios, base volume, historical returns, technical/fundamental metrics, and Codal notifications.
-- **🛒 Safe Order Execution (Read & Write):** Full OMS lifecycle support — send buy/sell orders, modify price/quantity in the orderbook, cancel active orders, and stage offline drafts.
-- **🔔 Market Supervisor Alerts:** Monitor exchange supervisor messages (پیام ناظر), trading halts, and reopening announcements.
-- **🔐 Frictionless Authentication:** Dynamic in-chat session refresh (`easytrader_update_session`) without needing server restarts.
+<table style="width: 100%; border: none;">
+  <tr>
+    <td width="35%" align="center" style="vertical-align: middle; border: none;">
+      <img src="./assets/feature-balance.png" alt="Real-Time Purchasing Power & Balances" width="280" style="border-radius: 14px;" />
+    </td>
+    <td width="65%" style="vertical-align: middle; border: none; padding-left: 20px;">
+      <h3>💰 Real-Time Financials & Purchasing Power</h3>
+      <p>
+        Full visibility into your liquid capital. Instantly query your real-time T0/T1/T2 purchasing power, check your daily interest-bearing Hami fund balance, and view linked bank accounts for instant payout readiness.
+      </p>
+      <ul>
+        <li><code>easytrader_get_account_balance</code>: Instant breakdown of buy power & balances.</li>
+        <li><code>easytrader_get_transactions</code>: Detailed ledger history & cash flow statements.</li>
+        <li><code>easytrader_get_funds</code>: Holdings across all Mofid mutual & gold funds.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style="width: 100%; border: none;">
+  <tr>
+    <td width="65%" style="vertical-align: middle; border: none; padding-right: 20px;">
+      <h3>📊 Market Depth & Smart Flow Intelligence</h3>
+      <p>
+        Deep forensics into market liquidity and ticker dynamics. Inspect top 5 bid/ask queues (Orderbook), monitor capital movements from Institutional vs. Individual investors (حقیقی و حقوقی), and screen stocks with automated EasyFilter scanners.
+      </p>
+      <ul>
+        <li><code>easytrader_get_market_overview</code>: Overall Index, market volume & turnover.</li>
+        <li><code>easytrader_get_market_map</code>: Live sector heatmaps & percentage gains.</li>
+        <li><code>easytrader_get_symbol_details</code>: Orderbook, limits, base volume & P/E ratio.</li>
+        <li><code>easytrader_get_symbol_analysis</code>: Smart money tracking & Codal filings.</li>
+      </ul>
+    </td>
+    <td width="35%" align="center" style="vertical-align: middle; border: none;">
+      <img src="./assets/feature-market.png" alt="Market Depth & Live Orderbook" width="280" style="border-radius: 14px;" />
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style="width: 100%; border: none;">
+  <tr>
+    <td width="35%" align="center" style="vertical-align: middle; border: none;">
+      <img src="./assets/feature-orders.png" alt="Safe Automated Order Execution" width="280" style="border-radius: 14px;" />
+    </td>
+    <td width="65%" style="vertical-align: middle; border: none; padding-left: 20px;">
+      <h3>🛒 Safe Order Execution & Staging</h3>
+      <p>
+        Empower your agent to act with surgical precision. Dispatch live orders directly into the market queue or stage them safely into pre-order drafts for manual one-click confirmation.
+      </p>
+      <ul>
+        <li><code>easytrader_send_order</code>: Direct Buy (0) or Sell (1) order submission.</li>
+        <li><code>easytrader_update_order</code>: Instant price or volume adjustments in queue.</li>
+        <li><code>easytrader_cancel_order</code>: Rapid order revocation by ID.</li>
+        <li><code>easytrader_create_draft</code>: Zero-risk offline draft staging.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 ---
 
