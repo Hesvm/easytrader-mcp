@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/banner-v5.png" alt="EasyTrader MCP Header Banner" width="100%" style="border-radius: 16px; margin-bottom: 24px;" />
+<img src="./assets/banner-v6.png" alt="EasyTrader MCP Header Banner" width="100%" style="border-radius: 16px; margin-bottom: 24px;" />
 
 # EasyTrader MCP
 ### Autonomous AI Trading & Intelligence Engine for Tehran Stock Exchange (TSE)
