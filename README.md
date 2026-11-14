@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/banner.png?v=3" />
+<img src="./assets/banner.png?v=3" alt="EasyTrader MCP Header Banner" width="100%" style="border-radius: 16px; margin-bottom: 24px;" />
 
 # EasyTrader MCP
 ### Autonomous AI Trading & Intelligence Engine for Tehran Stock Exchange (TSE)
@@ -38,68 +38,41 @@ Using the official [Model Context Protocol (MCP)](https://modelcontextprotocol.i
 
 ## ⚡ Core Capabilities
 
-<table style="width: 100%; border: none;">
-  <tr>
-    <td width="35%" align="center" style="vertical-align: middle; border: none;">
-      <img src="./assets/feature-balance.png" alt="Real-Time Purchasing Power & Balances" width="280" style="border-radius: 14px;" />
-    </td>
-    <td width="65%" style="vertical-align: middle; border: none; padding-left: 20px;">
-      <h3>💰 Real-Time Financials & Purchasing Power</h3>
-      <p>
-        Full visibility into your liquid capital. Instantly query your real-time T0/T1/T2 purchasing power, check your daily interest-bearing Hami fund balance, and view linked bank accounts for instant payout readiness.
-      </p>
-      <ul>
-        <li><code>easytrader_get_account_balance</code>: Instant breakdown of buy power & balances.</li>
-        <li><code>easytrader_get_transactions</code>: Detailed ledger history & cash flow statements.</li>
-        <li><code>easytrader_get_funds</code>: Holdings across all Mofid mutual & gold funds.</li>
-      </ul>
-    </td>
-  </tr>
-</table>
+### 1. Real-Time Financials & Purchasing Power
 
-<br/>
+<img src="./assets/feature-balance-wide.png" alt="Real-Time Purchasing Power & Financial Balances" width="100%" style="border-radius: 14px; margin: 12px 0 20px 0;" />
 
-<table style="width: 100%; border: none;">
-  <tr>
-    <td width="65%" style="vertical-align: middle; border: none; padding-right: 20px;">
-      <h3>📊 Market Depth & Smart Flow Intelligence</h3>
-      <p>
-        Deep forensics into market liquidity and ticker dynamics. Inspect top 5 bid/ask queues (Orderbook), monitor capital movements from Institutional vs. Individual investors (حقیقی و حقوقی), and screen stocks with automated EasyFilter scanners.
-      </p>
-      <ul>
-        <li><code>easytrader_get_market_overview</code>: Overall Index, market volume & turnover.</li>
-        <li><code>easytrader_get_market_map</code>: Live sector heatmaps & percentage gains.</li>
-        <li><code>easytrader_get_symbol_details</code>: Orderbook, limits, base volume & P/E ratio.</li>
-        <li><code>easytrader_get_symbol_analysis</code>: Smart money tracking & Codal filings.</li>
-      </ul>
-    </td>
-    <td width="35%" align="center" style="vertical-align: middle; border: none;">
-      <img src="./assets/feature-market.png" alt="Market Depth & Live Orderbook" width="280" style="border-radius: 14px;" />
-    </td>
-  </tr>
-</table>
+Full visibility into your liquid capital. Instantly query your real-time T0/T1/T2 purchasing power, check your daily interest-bearing Hami fund balance, and view linked bank accounts for instant payout readiness.
 
-<br/>
+- `easytrader_get_account_balance`: Instant breakdown of buy power & balances.
+- `easytrader_get_transactions`: Detailed ledger history & cash flow statements.
+- `easytrader_get_funds`: Holdings across all Mofid mutual & gold funds.
 
-<table style="width: 100%; border: none;">
-  <tr>
-    <td width="35%" align="center" style="vertical-align: middle; border: none;">
-      <img src="./assets/feature-orders.png" alt="Safe Automated Order Execution" width="280" style="border-radius: 14px;" />
-    </td>
-    <td width="65%" style="vertical-align: middle; border: none; padding-left: 20px;">
-      <h3>🛒 Safe Order Execution & Staging</h3>
-      <p>
-        Empower your agent to act with surgical precision. Dispatch live orders directly into the market queue or stage them safely into pre-order drafts for manual one-click confirmation.
-      </p>
-      <ul>
-        <li><code>easytrader_send_order</code>: Direct Buy (0) or Sell (1) order submission.</li>
-        <li><code>easytrader_update_order</code>: Instant price or volume adjustments in queue.</li>
-        <li><code>easytrader_cancel_order</code>: Rapid order revocation by ID.</li>
-        <li><code>easytrader_create_draft</code>: Zero-risk offline draft staging.</li>
-      </ul>
-    </td>
-  </tr>
-</table>
+---
+
+### 2. Market Depth & Smart Flow Intelligence
+
+<img src="./assets/feature-market-wide.png" alt="Market Depth & Live Orderbook" width="100%" style="border-radius: 14px; margin: 12px 0 20px 0;" />
+
+Deep forensics into market liquidity and ticker dynamics. Inspect top 5 bid/ask queues (Orderbook), monitor capital movements from Institutional vs. Individual investors (حقیقی و حقوقی), and screen stocks with automated EasyFilter scanners.
+
+- `easytrader_get_market_overview`: Overall Index, market volume & turnover.
+- `easytrader_get_market_map`: Live sector heatmaps & percentage gains.
+- `easytrader_get_symbol_details`: Orderbook, limits, base volume & P/E ratio.
+- `easytrader_get_symbol_analysis`: Smart money tracking & Codal filings.
+
+---
+
+### 3. Safe Order Execution & Pre-Order Staging
+
+<img src="./assets/feature-orders-wide.png" alt="Safe Automated Order Execution" width="100%" style="border-radius: 14px; margin: 12px 0 20px 0;" />
+
+Empower your agent to act with surgical precision. Dispatch live orders directly into the market queue or stage them safely into pre-order drafts for manual one-click confirmation.
+
+- `easytrader_send_order`: Direct Buy (0) or Sell (1) order submission.
+- `easytrader_update_order`: Instant price or volume adjustments in queue.
+- `easytrader_cancel_order`: Rapid order revocation by ID.
+- `easytrader_create_draft`: Zero-risk offline draft staging.
 
 ---
 
