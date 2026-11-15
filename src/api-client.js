@@ -302,9 +302,14 @@ export async function deleteDraft(draftId) {
 
 export async function getNotifications({ appType = 1, deviceType = 1, from, to, symbolIsin } = {}) {
   const client = createApiClient();
-  let url = `/notification/api/v1/inapp-message/instant?appType=${appType}&deviceType=${deviceType}`;
-  if (from) url += `&from=${from}`;
-  if (to) url += `&to=${to}`;
+  const now = new Date();
+  const defaultTo = now.toISOString().slice(0, 10);
+  const defaultFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const fromDate = from || defaultFrom;
+  const toDate = to || defaultTo;
+
+  let url = `/notification/api/v1/inapp-message/instant?appType=${appType}&deviceType=${deviceType}&from=${fromDate}&to=${toDate}`;
   if (symbolIsin) url += `&symbolIsin=${symbolIsin}`;
   const res = await client.get(url);
   return res.data;
@@ -312,12 +317,15 @@ export async function getNotifications({ appType = 1, deviceType = 1, from, to, 
 
 export async function getNscNotifications({ from, to, symbolIsin } = {}) {
   const client = createApiClient();
-  let url = `/notification/api/v1/inapp-message/nsc?`;
-  const params = [];
-  if (from) params.push(`from=${from}`);
-  if (to) params.push(`to=${to}`);
-  if (symbolIsin) params.push(`symbolIsin=${symbolIsin}`);
-  url += params.join('&');
+  const now = new Date();
+  const defaultTo = now.toISOString().slice(0, 10);
+  const defaultFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const fromDate = from || defaultFrom;
+  const toDate = to || defaultTo;
+
+  let url = `/notification/api/v1/inapp-message/nsc?from=${fromDate}&to=${toDate}`;
+  if (symbolIsin) url += `&symbolIsin=${symbolIsin}`;
   const res = await client.get(url);
   return res.data;
 }
