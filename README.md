@@ -135,26 +135,34 @@ cd easytrader-mcp
 npm install
 ```
 
-### 2. Grab your Bearer Token (Universal 1-Click Method)
-1. Open your browser and log into [d.easytrader.ir](https://d.easytrader.ir).
-2. Open the browser Console (`F12` or `Cmd + Option + I` -> **Console**).
-3. Paste this single line and press Enter:
+### 2. Connect Your Account (3-Tier Frictionless Authentication)
+
+#### 🌟 Tier 1: Zero-Touch Automated Login (Recommended)
+Just run:
+```bash
+npm run login
+# or directly: npx easytrader-mcp login
+```
+A clean browser window pops up with [d.easytrader.ir](https://d.easytrader.ir). Simply log into your Mofid account. The CLI automatically intercepts your authentication token, validates it against the exchange API, saves it to `~/.easytrader-session.json`, and closes the window automatically. **Zero copying, zero terminal pasting, zero DevTools.**
+
+#### ⚡ Tier 2: Local HTTP Bridge (Headless / Remote Fallback)
+If automated browser launch is not available in your environment, the CLI starts a local lightweight bridge on `http://127.0.0.1:4821` and outputs a one-click fetch snippet to execute in your browser console to sync credentials instantly.
+
+#### 📋 Tier 3: In-Chat or Manual 1-Click Fallback
+1. Open [d.easytrader.ir](https://d.easytrader.ir) in any browser.
+2. Open Console (`F12` -> Console) and run:
 ```javascript
 copy(sessionStorage.getItem(Object.keys(sessionStorage).find(k => k.includes('oidc'))))
 ```
-4. Save it to your local configuration:
-```bash
-# On macOS / Linux:
-pbpaste | node -e "const d=JSON.parse(require('fs').readFileSync(0,'utf8')); require('fs').writeFileSync(require('os').homedir()+'/.easytrader-session.json', JSON.stringify({token: 'Bearer ' + d.access_token}, null, 2))"
-```
-Or paste the token directly into `~/.easytrader-session.json`:
+3. Simply paste it directly to your AI agent in chat:
+   > *"Here is my EasyTrader session: [PASTE]"*
+   
+   Your AI agent will automatically call `easytrader_update_session` to configure your connection without touching any configuration files. Alternatively, paste the `access_token` into `~/.easytrader-session.json`:
 ```json
 {
   "token": "Bearer YOUR_COPIED_ACCESS_TOKEN"
 }
 ```
-*(Alternatively, you can dynamically update your session anytime directly in your AI chat prompt: `easytrader_update_session(token="Bearer ...")`)*
-*(Tip: Whenever your session expires, simply tell your agent: `"Here is my new EasyTrader token: Bearer eyJ..."` and it will automatically refresh using `easytrader_update_session`!)*
 
 ### 3. Verify Connectivity
 ```bash
