@@ -1,13 +1,14 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { getSessionToken, updateSession } from './auth.js';
+import { getSessionToken, updateSession, getSessionMetadata } from './auth.js';
+import { extractFromRunningBrowsers } from './browser-extractor.js';
 import * as api from './api-client.js';
 
 export function createServer() {
   const server = new McpServer({
     name: 'easytrader-mcp',
-    version: '1.0.0'
+    version: '1.2.0'
   });
 
   // ---------------------------------------------------------
@@ -16,10 +17,12 @@ export function createServer() {
 
   server.tool(
     'easytrader_auth_status',
-    'Check if the EasyTrader session token is active and verify account connectivity',
+    'Check if the EasyTrader session token is active, inspect user profile and purchasing power',
     {},
     async () => {
       const token = getSessionToken();
+      const meta = getSessionMetadata();
+
       if (!token) {
         return {
           content: [
@@ -27,7 +30,13 @@ export function createServer() {
               type: 'text',
               text: JSON.stringify({
                 authenticated: false,
-                message: 'No active session token found. Please use easytrader_update_session to set your Bearer token.'
+                sessionSource: meta.source,
+                message: 'No active session token found.',
+                nextSteps: {
+                  option1_magic: 'Open d.easytrader.ir in Google Chrome, Brave, or Edge. EasyTrader MCP will auto-sync on next query.',
+                  option2_cli: 'Run "npx easytrader-mcp login" in your terminal to log in via browser window.',
+                  option3_console: 'In d.easytrader.ir DevTools console (F12), run: copy(sessionStorage.getItem(Object.keys(sessionStorage).find(k=>k.includes("oidc")))) and pass to easytrader_update_session.'
+                }
               }, null, 2)
             }
           ]
@@ -35,15 +44,31 @@ export function createServer() {
       }
 
       try {
-        const profile = await api.getProfile();
+        const [profile, money] = await Promise.allSettled([
+          api.getProfile(),
+          api.getAccountMoney()
+        ]);
+
+        const profileData = profile.status === 'fulfilled' ? profile.value : null;
+        const moneyData = money.status === 'fulfilled' ? money.value : null;
+
         return {
           content: [
             {
               type: 'text',
               text: JSON.stringify({
                 authenticated: true,
+                sessionSource: meta.source,
                 message: 'EasyTrader session is valid and active.',
-                user: profile
+                user: profileData ? {
+                  name: profileData.title || `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim(),
+                  tradeCode: profileData.tradeCode || 'N/A'
+                } : null,
+                purchasingPower: moneyData?.buyPowerT0 !== undefined ? {
+                  rials: moneyData.buyPowerT0,
+                  tomans: Math.floor(moneyData.buyPowerT0 / 10).toLocaleString() + ' تومان',
+                  hamiBalance: moneyData.hamiBalance ? Math.floor(moneyData.hamiBalance / 10).toLocaleString() + ' تومان' : null
+                } : null
               }, null, 2)
             }
           ]
@@ -57,12 +82,63 @@ export function createServer() {
                 authenticated: false,
                 error: err.message,
                 status: err.status || 500,
-                hint: 'Session token expired or invalid. Please copy a new Bearer token from Firefox DevTools and call easytrader_update_session.'
+                hint: 'Session token expired or invalid. Please run "npx easytrader-mcp login" or update via easytrader_update_session.'
               }, null, 2)
             }
           ]
         };
       }
+    }
+  );
+
+  server.tool(
+    'easytrader_auto_auth',
+    'Attempt zero-click automatic authentication extraction from running browser (Chrome/Brave/Edge/Arc)',
+    {},
+    async () => {
+      const extracted = extractFromRunningBrowsers();
+      if (extracted && extracted.token) {
+        updateSession(extracted.token);
+        try {
+          const profile = await api.getProfile();
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                success: true,
+                authenticated: true,
+                browser: extracted.browser,
+                message: 'سشن با موفقیت و به صورت خودکار از مرورگر استخراج و ذخیره شد.',
+                user: `${profile.firstName || ''} ${profile.lastName || ''}`.trim()
+              }, null, 2)
+            }]
+          };
+        } catch (e) {
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                success: true,
+                authenticated: true,
+                browser: extracted.browser,
+                message: 'توکن از مرورگر استخراج شد اما هنوز تایید نشده است.'
+              }, null, 2)
+            }]
+          };
+        }
+      }
+
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            success: false,
+            authenticated: false,
+            message: 'هیچ تب فعالی از d.easytrader.ir در مرورگرهای در حال اجرا یافت نشد.',
+            action: 'کافیست تب d.easytrader.ir را در مرورگر باز کنید، یا دستور npx easytrader-mcp login را در ترمینال اجرا کنید.'
+          }, null, 2)
+        }]
+      };
     }
   );
 
