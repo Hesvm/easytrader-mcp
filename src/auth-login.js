@@ -1,14 +1,15 @@
 import fs from 'fs';
-import path from 'os';
+import path from 'path';
+import os from 'os';
 import readline from 'readline';
 import http from 'http';
 import { getProfile } from './api-client.js';
 
-const SESSION_FILE = `${path.homedir()}/.easytrader-session.json`;
+const SESSION_FILE = path.join(os.homedir(), '.easytrader-session.json');
 
 function saveToken(token) {
   const cleanToken = token.startsWith('Bearer ') ? token : `Bearer ${token.trim()}`;
-  fs.writeFileSync(SESSION_FILE, JSON.stringify({ token: cleanToken }, null, 2));
+  fs.writeFileSync(SESSION_FILE, JSON.stringify({ token: cleanToken, updatedAt: new Date().toISOString() }, null, 2), { mode: 0o600 });
   return cleanToken;
 }
 
@@ -250,8 +251,9 @@ export async function runLoginFlow() {
   try {
     const profile = await getProfile();
     console.log('\n🎉 AUTHENTICATION SUCCESSFUL!');
-    console.log(`👤 Name: ${profile.firstName || ''} ${profile.lastName || ''}`);
-    console.log(`🆔 Customer Code: ${profile.customerIsin || 'N/A'}`);
+    const name = profile.title || `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
+    console.log(`👤 Name: ${name}`);
+    console.log(`🆔 Customer Code / Trade Code: ${profile.tradeCode || profile.customerIsin || 'N/A'}`);
     console.log(`💾 Saved to: ${SESSION_FILE}`);
     console.log('🚀 EasyTrader MCP is now fully connected to your account!\n');
     process.exit(0);
