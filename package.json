@@ -1,6 +1,6 @@
 {
   "name": "easytrader-mcp",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Production-ready Model Context Protocol (MCP) Server for EasyTrader (Mofid Securities / d.easytrader.ir)",
   "main": "src/index.js",
   "type": "module",

@@ -472,3 +472,135 @@ export async function updateClientAppSettings(settings) {
   const res = await client.post('/easy/api/clientAppSetting', settings);
   return res.data;
 }
+
+// ---------------------------------------------------------
+// 13. MofidCard Money Transfer & Management
+// ---------------------------------------------------------
+
+export async function depositToMofidCard(amount) {
+  const client = createApiClient();
+  const res = await client.post('/mofidcard/api/deposit/', { amount: amount.toString() });
+  return res.data;
+}
+
+export async function withdrawFromMofidCard(amount) {
+  const client = createApiClient();
+  const res = await client.post('/mofidcard/api/withdraw', { amount: amount.toString() });
+  return res.data;
+}
+
+export async function getMofidCardHistory() {
+  const client = createApiClient();
+  const res = await client.get('/mofidcard/api/transaction-history');
+  return res.data;
+}
+
+export async function blockMofidCard(cardNumber) {
+  const client = createApiClient();
+  const res = await client.post('/mofidcard/api/block-card', { cardNumber });
+  return res.data;
+}
+
+// ---------------------------------------------------------
+// 14. IPO (Initial Public Offerings - عرضه‌های اولیه)
+// ---------------------------------------------------------
+
+export async function getIpoOrders(symbolIsins = []) {
+  const client = createApiClient();
+  const isinList = Array.isArray(symbolIsins) ? symbolIsins : [symbolIsins];
+  const res = await client.post('/ipo/api/ipo/customer/offline-orders', { symbolIsins: isinList });
+  return res.data;
+}
+
+export async function createIpoOrder(orderData) {
+  const client = createApiClient();
+  const res = await client.post('/ipo/api/order', orderData);
+  return res.data;
+}
+
+export async function deleteIpoOrder(orderId) {
+  const client = createApiClient();
+  const res = await client.delete('/ipo/api/order', { data: { orderId } });
+  return res.data;
+}
+
+// ---------------------------------------------------------
+// 15. Offline Orders (سفارش‌های آفلاین / خارج از ساعات بازار)
+// ---------------------------------------------------------
+
+export async function getOfflineOrders(filters = {}) {
+  const client = createApiClient();
+  const res = await client.post('/algo/api/offline/order-history', filters);
+  return res.data;
+}
+
+export async function createOfflineOrder(order) {
+  const client = createApiClient();
+  const res = await client.post('/algo/api/offline/order', { request: order });
+  return res.data;
+}
+
+export async function cancelOfflineOrder(orders) {
+  const client = createApiClient();
+  const orderList = Array.isArray(orders) ? orders : [orders];
+  const res = await client.put('/algo/api/offline/order', { request: { orders: orderList } });
+  return res.data;
+}
+
+// ---------------------------------------------------------
+// 16. Credit Collateral & Evaluation (ارزش تضمین و ارزیابی اعتباری سبد)
+// ---------------------------------------------------------
+
+export async function getCreditGuaranteedValue() {
+  const client = createApiClient();
+  const res = await client.get('/credit/api/guaranteedValue');
+  return res.data;
+}
+
+export async function getIsCreditCustomer() {
+  const client = createApiClient();
+  const res = await client.get('/credit/api/isCreditCustomer');
+  return res.data;
+}
+
+// ---------------------------------------------------------
+// 17. Family / Dependent Transfers (انتقال وجه حساب‌های تحت تکفل)
+// ---------------------------------------------------------
+
+export async function getHasChildren() {
+  const client = createApiClient();
+  const res = await client.get('/finance/api/customers/has-children');
+  return res.data;
+}
+
+export async function getChildrenList() {
+  const client = createApiClient();
+  const res = await client.get('/finance/api/customers/customer-children');
+  return res.data;
+}
+
+export async function getFamilyTransfers({ page = 1, size = 20 } = {}) {
+  const client = createApiClient();
+  const res = await client.get('/finance/api/payments/parent-child-transfers/paged', {
+    params: { pageNumber: page, pageSize: size }
+  });
+  return res.data;
+}
+
+export async function transferFamilyMoney(transferData) {
+  const client = createApiClient();
+  const res = await client.post('/finance/api/payments/parent-child-transfer', transferData);
+  return res.data;
+}
+
+// ---------------------------------------------------------
+// 18. Account Security & Session Management (مدیریت نشست‌ها)
+// ---------------------------------------------------------
+
+export async function removeActiveSessions(sessionIds) {
+  const client = createApiClient();
+  const ids = Array.isArray(sessionIds) ? sessionIds : [sessionIds];
+  const res = await client.post('/easy/api/account/remove-sessions', { ids });
+  return res.data;
+}
+

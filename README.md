@@ -26,7 +26,7 @@
 
 **EasyTrader MCP** is an open-source bridge connecting AI agents—such as Claude Desktop, Cursor, Antigravity, and ChatGPT—directly to the Tehran Stock Exchange (TSE) via Mofid Securities' EasyTrader platform.
 
-Built on Anthropic's open [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), it gives your LLM direct, authenticated access to 25 specialized trading and analysis tools:
+Built on Anthropic's open [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), it gives your LLM direct, authenticated access to 31 specialized trading and analysis tools:
 
 - **Portfolio & Ledger:** Check real-time purchasing power (T0/T1/T2), portfolio holdings, breakeven prices, and transaction history.
 - **Market Intelligence:** Inspect 5-level orderbooks, institutional vs. individual flows (حقیقی و حقوقی), sector heatmaps, and technical filters.
@@ -88,7 +88,7 @@ Full-spectrum access to Mofid Securities advanced ecosystem. Manage trading cred
 
 ---
 
-## 🛠️ Available MCP Tools (25 Production Tools)
+## 🛠️ Available MCP Tools (31 Production Tools)
 
 | Tool | Type | Description |
 |---|---|---|
@@ -113,6 +113,12 @@ Full-spectrum access to Mofid Securities advanced ecosystem. Manage trading cred
 | `easytrader_get_credit_info` | `Read` | Fetches Mofid credit packages, Bashgah PointX balance, and credit application status. |
 | `easytrader_apply_credit` | `Write` | Applies for Mofid Securities trading credit package using club points. |
 | `easytrader_get_mofidcard` | `Read` | Returns MofidCard balance (Rials), linked Sheba, card status, and debit info. |
+| `easytrader_manage_mofidcard_transfer` | `Write` | Instant 2-way fund transfer between purchasing power & MofidCard, card statement, and freeze. |
+| `easytrader_manage_ipo` | `Write` | Query active/past IPOs, place automated offline IPO orders, or cancel pending requests. |
+| `easytrader_manage_offline_orders` | `Write` | Submit, list, or cancel offline orders placed outside TSE market hours for the next opening. |
+| `easytrader_get_credit_collateral` | `Read` | Total portfolio collateral guaranteed value for credit financing and customer eligibility. |
+| `easytrader_manage_family_transfers` | `Write` | Transfer funds between parent/guardian account and dependent child accounts within Mofid. |
+| `easytrader_manage_sessions` | `Write` | Terminate active login sessions or devices remotely for account security. |
 | `easytrader_get_options` | `Read` | Inspects open derivatives/option contracts (اختیار معامله) and physical/cash settlement status. |
 | `easytrader_manage_fund_units` | `Write` | Direct issuance (صدور), redemption (ابطال), or ledger tracking for Mofid investment funds. |
 | `easytrader_get_batch_quotes` | `Read` | High-speed multi-symbol quote retrieval (closing/last price, queue, limits) in 1 network call. |
@@ -129,15 +135,25 @@ cd easytrader-mcp
 npm install
 ```
 
-### 2. Grab your Bearer Token (One-time)
+### 2. Grab your Bearer Token (Universal 1-Click Method)
 1. Open your browser and log into [d.easytrader.ir](https://d.easytrader.ir).
-2. Press `F12` (or `Cmd + Option + I`) to open Developer Tools and go to the **Network** tab.
-3. Filter by `api-mts` or click on any request.
-4. Copy the value of the `Authorization` request header (starts with `Bearer eyJ...`).
-5. Save it to your local configuration:
-```bash
-echo '{"token": "Bearer YOUR_COPIED_TOKEN"}' > ~/.easytrader-session.json
+2. Open the browser Console (`F12` or `Cmd + Option + I` -> **Console**).
+3. Paste this single line and press Enter:
+```javascript
+copy(sessionStorage.getItem(Object.keys(sessionStorage).find(k => k.includes('oidc'))))
 ```
+4. Save it to your local configuration:
+```bash
+# On macOS / Linux:
+pbpaste | node -e "const d=JSON.parse(require('fs').readFileSync(0,'utf8')); require('fs').writeFileSync(require('os').homedir()+'/.easytrader-session.json', JSON.stringify({token: 'Bearer ' + d.access_token}, null, 2))"
+```
+Or paste the token directly into `~/.easytrader-session.json`:
+```json
+{
+  "token": "Bearer YOUR_COPIED_ACCESS_TOKEN"
+}
+```
+*(Alternatively, you can dynamically update your session anytime directly in your AI chat prompt: `easytrader_update_session(token="Bearer ...")`)*
 *(Tip: Whenever your session expires, simply tell your agent: `"Here is my new EasyTrader token: Bearer eyJ..."` and it will automatically refresh using `easytrader_update_session`!)*
 
 ### 3. Verify Connectivity

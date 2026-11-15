@@ -805,6 +805,205 @@ export function createServer() {
     }
   );
 
+  // ---------------------------------------------------------
+  // 13. MofidCard Fund Transfers & Management (انتقال وجه آنی مفیدکارت)
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_manage_mofidcard_transfer',
+    'Transfer money instantly between trading purchasing power and MofidCard debit card, view transaction history, or block card',
+    {
+      action: z.enum(['deposit', 'withdraw', 'history', 'block']).describe('Action: "deposit" to fund card from purchasing power, "withdraw" to return money from card to purchasing power, "history" for statement, "block" to freeze card'),
+      amount: z.union([z.number(), z.string()]).optional().describe('Amount in Rials (required for deposit and withdraw)'),
+      cardNumber: z.string().optional().describe('Card number (required for action="block")')
+    },
+    async ({ action, amount, cardNumber }) => {
+      try {
+        let result;
+        if (action === 'deposit') {
+          if (!amount) throw new Error('amount is required for action="deposit"');
+          result = await api.depositToMofidCard(amount);
+        } else if (action === 'withdraw') {
+          if (!amount) throw new Error('amount is required for action="withdraw"');
+          result = await api.withdrawFromMofidCard(amount);
+        } else if (action === 'history') {
+          result = await api.getMofidCardHistory();
+        } else if (action === 'block') {
+          if (!cardNumber) throw new Error('cardNumber is required for action="block"');
+          result = await api.blockMofidCard(cardNumber);
+        }
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
+  // ---------------------------------------------------------
+  // 14. IPO Management (عرضه‌های اولیه خودکار و آفلاین)
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_manage_ipo',
+    'List active/past IPO orders, create automated offline IPO orders, or cancel pending IPO requests',
+    {
+      action: z.enum(['list', 'create', 'delete']).default('list').describe('Action: "list" to fetch customer IPO orders, "create" to place an IPO order, "delete" to cancel'),
+      symbolIsins: z.array(z.string()).optional().default([]).describe('List of Symbol ISINs to query IPO orders for'),
+      orderData: z.record(z.any()).optional().describe('IPO order parameters (required for action="create")'),
+      orderId: z.union([z.number(), z.string()]).optional().describe('Order ID to cancel (required for action="delete")')
+    },
+    async ({ action, symbolIsins, orderData, orderId }) => {
+      try {
+        let result;
+        if (action === 'list') {
+          result = await api.getIpoOrders(symbolIsins);
+        } else if (action === 'create') {
+          if (!orderData) throw new Error('orderData object is required for action="create"');
+          result = await api.createIpoOrder(orderData);
+        } else if (action === 'delete') {
+          if (!orderId) throw new Error('orderId is required for action="delete"');
+          result = await api.deleteIpoOrder(orderId);
+        }
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
+  // ---------------------------------------------------------
+  // 15. Offline Orders (سفارش‌های آفلاین / خارج از ساعات بازار)
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_manage_offline_orders',
+    'Submit, list, or cancel offline orders placed outside TSE market hours for execution in the next pre-opening session',
+    {
+      action: z.enum(['list', 'create', 'cancel']).default('list').describe('Action: "list" for offline order history, "create" to submit offline order, "cancel" to cancel'),
+      filters: z.record(z.any()).optional().default({}).describe('History filter options for action="list"'),
+      order: z.record(z.any()).optional().describe('Single offline order request object for action="create"'),
+      orders: z.array(z.record(z.any())).optional().describe('Array of order objects to cancel for action="cancel"')
+    },
+    async ({ action, filters, order, orders }) => {
+      try {
+        let result;
+        if (action === 'list') {
+          result = await api.getOfflineOrders(filters);
+        } else if (action === 'create') {
+          if (!order) throw new Error('order object is required for action="create"');
+          result = await api.createOfflineOrder(order);
+        } else if (action === 'cancel') {
+          if (!orders) throw new Error('orders array is required for action="cancel"');
+          result = await api.cancelOfflineOrder(orders);
+        }
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
+  // ---------------------------------------------------------
+  // 16. Credit Collateral & Evaluation (ارزش تضمین و رتبه اعتباری پرتفوی)
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_get_credit_collateral',
+    'Get total portfolio collateral guaranteed value for credit financing and check credit customer eligibility',
+    {},
+    async () => {
+      try {
+        const [guaranteedValue, isCreditCustomer] = await Promise.all([
+          api.getCreditGuaranteedValue(),
+          api.getIsCreditCustomer()
+        ]);
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({ guaranteedValue, isCreditCustomer }, null, 2)
+          }]
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
+  // ---------------------------------------------------------
+  // 17. Family / Dependent Transfers (انتقال وجه حساب‌های تحت تکفل)
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_manage_family_transfers',
+    'Manage money transfers between parent/guardian account and dependent child accounts within Mofid Securities',
+    {
+      action: z.enum(['has_children', 'children_list', 'transfer_history', 'transfer']).default('has_children').describe('Action to perform'),
+      page: z.number().optional().default(1).describe('Page number for history'),
+      size: z.number().optional().default(20).describe('Page size for history (max 50)'),
+      transferData: z.record(z.any()).optional().describe('Transfer payload required when action="transfer"')
+    },
+    async ({ action, page, size, transferData }) => {
+      try {
+        let result;
+        if (action === 'has_children') {
+          result = await api.getHasChildren();
+        } else if (action === 'children_list') {
+          result = await api.getChildrenList();
+        } else if (action === 'transfer_history') {
+          result = await api.getFamilyTransfers({ page, size });
+        } else if (action === 'transfer') {
+          if (!transferData) throw new Error('transferData is required for action="transfer"');
+          result = await api.transferFamilyMoney(transferData);
+        }
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
+  // ---------------------------------------------------------
+  // 18. Account Security & Session Management (مدیریت نشست‌های فعال)
+  // ---------------------------------------------------------
+
+  server.tool(
+    'easytrader_manage_sessions',
+    'Terminate active login sessions or devices remotely for account security',
+    {
+      sessionIds: z.array(z.union([z.string(), z.number()])).describe('List of session IDs to terminate/remove')
+    },
+    async ({ sessionIds }) => {
+      try {
+        const result = await api.removeActiveSessions(sessionIds);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: err.message }, null, 2) }]
+        };
+      }
+    }
+  );
+
   return server;
 }
 
