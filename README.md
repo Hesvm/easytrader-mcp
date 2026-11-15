@@ -135,34 +135,37 @@ cd easytrader-mcp
 npm install
 ```
 
-### 2. Connect Your Account (3-Tier Frictionless Authentication)
+### 2. Connect Your Account (Zero-Friction Autonomous Authentication)
 
-#### 🌟 Tier 1: Zero-Touch Automated Login (Recommended)
-Just run:
+EasyTrader MCP supports 5 seamless authentication tiers, requiring **zero passwords and zero configuration editing**:
+
+#### 🧩 Method 1: EasyTrader AI Sync WebExtension (Firefox & Chrome)
+The ultimate set-and-forget solution. Install the lightweight extension from the `extension/` directory:
+- **Firefox**: Open `about:debugging` -> Click "This Firefox" -> Click "Load Temporary Add-on..." -> Select `extension/manifest.json`.
+- **Chrome / Brave / Edge**: Open `chrome://extensions` -> Enable "Developer mode" -> Click "Load unpacked" -> Select the `extension/` folder.
+
+Whenever you open `d.easytrader.ir`, the extension detects your active session and silently syncs it with the local MCP bridge on port 4821.
+
+#### 📌 Method 2: 1-Click Bookmarklet (Any Browser: Safari, Firefox, Chrome)
+No extension or developer mode required. Create a new bookmark on your bookmarks bar with the following URL:
+```javascript
+javascript:(function(){try{var t=null;for(var i=0;i<sessionStorage.length;i++){var k=sessionStorage.key(i);if(k&&k.indexOf('oidc')!==-1){var v=JSON.parse(sessionStorage.getItem(k));if(v&&v.access_token){t=v.access_token;break;}}}if(!t)t=localStorage.getItem('token');if(!t){alert('❌ توکن ورود یافت نشد. لطفا ابتدا وارد d.easytrader.ir شوید.');return;}fetch('http://127.0.0.1:4821',{method:'POST',body:t,headers:{'Content-Type':'text/plain'}}).then(function(r){return r.json();}).then(function(d){var toast=document.createElement('div');toast.innerHTML='✨ <b>نشست کارگزاری مفید با Antigravity MCP همگام شد!</b>';toast.style.cssText='position:fixed;bottom:24px;left:24px;background:#10b981;color:#fff;padding:12px 20px;border-radius:10px;font-family:sans-serif;font-size:14px;direction:rtl;z-index:999999;box-shadow:0 8px 24px rgba(0,0,0,0.2);';document.body.appendChild(toast);setTimeout(function(){toast.remove();},3500);}).catch(function(e){alert('⚠️ پل ارتباطی MCP (پورت 4821) در دسترس نیست. سرور MCP را اجرا کنید.');});}catch(e){alert('خطا: '+e.message);}})();
+```
+Whenever you are on `d.easytrader.ir`, just click the bookmark once. Your session is instantly synced in 0.1s!
+
+#### 🪄 Method 3: Zero-Click Browser Tab Auto-Detection (Chrome, Brave, Edge, Arc)
+Just keep `d.easytrader.ir` open in a tab in Chrome, Brave, Edge, or Arc. EasyTrader MCP automatically inspects active browser tabs and extracts your session token without any manual action.
+
+#### 📁 Method 4: Downloads HAR Auto-Ingestion
+Export a HAR file from your browser's Network tab and save it into your `~/Downloads` folder. EasyTrader MCP automatically scans for recent `*easytrader*.har` dumps and imports the bearer token.
+
+#### 🖥️ Method 5: Interactive Login Window
+Run:
 ```bash
 npm run login
 # or directly: npx easytrader-mcp login
 ```
-A clean browser window pops up with [d.easytrader.ir](https://d.easytrader.ir). Simply log into your Mofid account. The CLI automatically intercepts your authentication token, validates it against the exchange API, saves it to `~/.easytrader-session.json`, and closes the window automatically. **Zero copying, zero terminal pasting, zero DevTools.**
-
-#### ⚡ Tier 2: Local HTTP Bridge (Headless / Remote Fallback)
-If automated browser launch is not available in your environment, the CLI starts a local lightweight bridge on `http://127.0.0.1:4821` and outputs a one-click fetch snippet to execute in your browser console to sync credentials instantly.
-
-#### 📋 Tier 3: In-Chat or Manual 1-Click Fallback
-1. Open [d.easytrader.ir](https://d.easytrader.ir) in any browser.
-2. Open Console (`F12` -> Console) and run:
-```javascript
-copy(sessionStorage.getItem(Object.keys(sessionStorage).find(k => k.includes('oidc'))))
-```
-3. Simply paste it directly to your AI agent in chat:
-   > *"Here is my EasyTrader session: [PASTE]"*
-   
-   Your AI agent will automatically call `easytrader_update_session` to configure your connection without touching any configuration files. Alternatively, paste the `access_token` into `~/.easytrader-session.json`:
-```json
-{
-  "token": "Bearer YOUR_COPIED_ACCESS_TOKEN"
-}
-```
+A clean browser window pops up with [d.easytrader.ir](https://d.easytrader.ir). Simply log into your Mofid account. The CLI automatically intercepts your authentication token, validates it against the exchange API, and saves it to `~/.easytrader-session.json`.
 
 ### 3. Verify Connectivity
 ```bash

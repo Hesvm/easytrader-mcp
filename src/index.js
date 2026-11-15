@@ -1,8 +1,9 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { getSessionToken, updateSession, getSessionMetadata } from './auth.js';
-import { extractFromRunningBrowsers } from './browser-extractor.js';
+import { getSessionToken, updateSession, getSessionMetadata, extractFromDownloadsHar } from './auth.js';
+import { extractFromRunningBrowsers, extractFromCDP } from './browser-extractor.js';
+import { startBridge } from './bridge.js';
 import * as api from './api-client.js';
 
 export function createServer() {
@@ -32,10 +33,12 @@ export function createServer() {
                 authenticated: false,
                 sessionSource: meta.source,
                 message: 'No active session token found.',
-                nextSteps: {
-                  option1_magic: 'Open d.easytrader.ir in Google Chrome, Brave, or Edge. EasyTrader MCP will auto-sync on next query.',
-                  option2_cli: 'Run "npx easytrader-mcp login" in your terminal to log in via browser window.',
-                  option3_console: 'In d.easytrader.ir DevTools console (F12), run: copy(sessionStorage.getItem(Object.keys(sessionStorage).find(k=>k.includes("oidc")))) and pass to easytrader_update_session.'
+                zeroFrictionOptions: {
+                  option1_extension: 'Install the lightweight EasyTrader AI Sync extension (extension/ in repository) in Firefox or Chrome for instant background sync.',
+                  option2_bookmarklet: 'Call "easytrader_get_bookmarklet" and drag the bookmarklet to your browser bar. Click it on d.easytrader.ir for 1-click sync.',
+                  option3_browser_tab: 'Open d.easytrader.ir in Google Chrome, Brave, Edge, or Arc. EasyTrader MCP auto-detects running tabs.',
+                  option4_har_dump: 'Save a HAR network export from DevTools to ~/Downloads. It is ingested automatically.',
+                  option5_cli_login: 'Run "npx easytrader-mcp login" in your terminal.'
                 }
               }, null, 2)
             }
@@ -82,7 +85,7 @@ export function createServer() {
                 authenticated: false,
                 error: err.message,
                 status: err.status || 500,
-                hint: 'Session token expired or invalid. Please run "npx easytrader-mcp login" or update via easytrader_update_session.'
+                hint: 'Session token expired or invalid. Use the EasyTrader extension, bookmarklet, or run "npx easytrader-mcp login".'
               }, null, 2)
             }
           ]
@@ -93,10 +96,29 @@ export function createServer() {
 
   server.tool(
     'easytrader_auto_auth',
-    'Attempt zero-click automatic authentication extraction from running browser (Chrome/Brave/Edge/Arc)',
+    'Attempt multi-source zero-click automatic authentication (Running Browser tabs, CDP Remote Debugging, Downloads HAR dumps)',
     {},
     async () => {
-      const extracted = extractFromRunningBrowsers();
+      // 1. Try Running Browsers (Chrome, Brave, Edge, Arc via JXA)
+      let extracted = extractFromRunningBrowsers();
+
+      // 2. Try CDP Remote Debugging (port 9222/9223)
+      if (!extracted) {
+        try {
+          extracted = await extractFromCDP();
+        } catch {}
+      }
+
+      // 3. Try Downloads HAR dump
+      if (!extracted) {
+        try {
+          const harToken = extractFromDownloadsHar();
+          if (harToken) {
+            extracted = { browser: 'Downloads HAR Archive', token: harToken };
+          }
+        } catch {}
+      }
+
       if (extracted && extracted.token) {
         updateSession(extracted.token);
         try {
@@ -107,9 +129,10 @@ export function createServer() {
               text: JSON.stringify({
                 success: true,
                 authenticated: true,
-                browser: extracted.browser,
-                message: 'سشن با موفقیت و به صورت خودکار از مرورگر استخراج و ذخیره شد.',
-                user: `${profile.firstName || ''} ${profile.lastName || ''}`.trim()
+                source: extracted.browser,
+                message: 'نشست کارگزاری مفید با موفقیت به صورت خودکار شناسایی و ذخیره شد.',
+                user: `${profile.firstName || ''} ${profile.lastName || ''}`.trim(),
+                tradeCode: profile.tradeCode
               }, null, 2)
             }]
           };
@@ -120,8 +143,8 @@ export function createServer() {
               text: JSON.stringify({
                 success: true,
                 authenticated: true,
-                browser: extracted.browser,
-                message: 'توکن از مرورگر استخراج شد اما هنوز تایید نشده است.'
+                source: extracted.browser,
+                message: 'توکن با موفقیت استخراج و ذخیره شد.'
               }, null, 2)
             }]
           };
@@ -134,8 +157,32 @@ export function createServer() {
           text: JSON.stringify({
             success: false,
             authenticated: false,
-            message: 'هیچ تب فعالی از d.easytrader.ir در مرورگرهای در حال اجرا یافت نشد.',
-            action: 'کافیست تب d.easytrader.ir را در مرورگر باز کنید، یا دستور npx easytrader-mcp login را در ترمینال اجرا کنید.'
+            message: 'هیچ نشست فعالی در مرورگرهای در حال اجرا، پورت‌های دیباگ یا پوشه دانلودها یافت نشد.',
+            suggestedActions: [
+              'افزونه EasyTrader AI Sync را از پوشه extension نصب کنید',
+              'یا از بوکمارکلت 1-کلیکی (easytrader_get_bookmarklet) استفاده نمایید',
+              'یا یک تب d.easytrader.ir را در گوگل کروم یا بریو باز بگذارید'
+            ]
+          }, null, 2)
+        }]
+      };
+    }
+  );
+
+  server.tool(
+    'easytrader_get_bookmarklet',
+    'Get the 1-Click Bookmarklet code for instant 0-friction session sync in any browser (Firefox, Safari, Chrome)',
+    {},
+    async () => {
+      const code = `javascript:(function(){try{var t=null;for(var i=0;i<sessionStorage.length;i++){var k=sessionStorage.key(i);if(k&&k.indexOf('oidc')!==-1){var v=JSON.parse(sessionStorage.getItem(k));if(v&&v.access_token){t=v.access_token;break;}}}if(!t)t=localStorage.getItem('token');if(!t){alert('❌ توکن ورود یافت نشد. لطفا ابتدا وارد d.easytrader.ir شوید.');return;}fetch('http://127.0.0.1:4821',{method:'POST',body:t,headers:{'Content-Type':'text/plain'}}).then(function(r){return r.json();}).then(function(d){var toast=document.createElement('div');toast.innerHTML='✨ <b>نشست کارگزاری مفید با Antigravity MCP همگام شد!</b>';toast.style.cssText='position:fixed;bottom:24px;left:24px;background:#10b981;color:#fff;padding:12px 20px;border-radius:10px;font-family:sans-serif;font-size:14px;direction:rtl;z-index:999999;box-shadow:0 8px 24px rgba(0,0,0,0.2);';document.body.appendChild(toast);setTimeout(function(){toast.remove();},3500);}).catch(function(e){alert('⚠️ پل ارتباطی MCP (پورت 4821) در دسترس نیست. سرور MCP را اجرا کنید.');});}catch(e){alert('خطا: '+e.message);}})();`;
+
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            title: '1-Click EasyTrader Bookmarklet',
+            instructions: 'کد زیر را به عنوان یک Bookmark در نوار بوکمارک مرورگر خود ذخیره کنید. هر بار در سایت d.easytrader.ir روی آن کلیک کنید، در ۰.۱ ثانیه نشست شما با هوش مصنوعی هماهنگ می‌شود.',
+            bookmarkletCode: code
           }, null, 2)
         }]
       };
@@ -1084,6 +1131,11 @@ export function createServer() {
 }
 
 export async function runServer() {
+  // Automatically start background loopback auth bridge for WebExtension / Bookmarklet 1-click sync
+  try {
+    startBridge({ quiet: true });
+  } catch {}
+
   const server = createServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);

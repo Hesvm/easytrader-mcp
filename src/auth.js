@@ -28,11 +28,45 @@ export function parseTokenInput(input) {
 }
 
 /**
+ * Scans ~/Downloads for recent EasyTrader HAR traffic dumps
+ */
+export function extractFromDownloadsHar() {
+  const downloadsDir = path.join(os.homedir(), 'Downloads');
+  if (!fs.existsSync(downloadsDir)) return null;
+
+  try {
+    const files = fs.readdirSync(downloadsDir)
+      .filter(f => f.toLowerCase().includes('easytrader') && f.endsWith('.har'))
+      .sort((a, b) => {
+        try {
+          const statA = fs.statSync(path.join(downloadsDir, a));
+          const statB = fs.statSync(path.join(downloadsDir, b));
+          return statB.mtimeMs - statA.mtimeMs;
+        } catch { return 0; }
+      });
+
+    for (const f of files) {
+      const fullPath = path.join(downloadsDir, f);
+      const content = fs.readFileSync(fullPath, 'utf8');
+      const match = content.match(/Bearer eyJhbGciOiJSUzI1Ni[a-zA-Z0-9_\-\.]+/);
+      if (match) {
+        console.error(`✨ [Auto-Auth] Found active EasyTrader session token in Downloads/${f}!`);
+        return match[0];
+      }
+    }
+  } catch (err) {
+    // Silently continue
+  }
+  return null;
+}
+
+/**
  * Get active Bearer token for EasyTrader API.
  * Priority Waterfall:
  * 1. EASYTRADER_TOKEN / EASYTRADER_SESSION_TOKEN environment variable
  * 2. ~/.easytrader-session.json local config
  * 3. Zero-Click Automatic Browser Extraction (macOS Chrome/Brave/Edge)
+ * 4. Automatic extraction from ~/Downloads/*.har archives
  */
 export function getSessionToken() {
   // 1. Environment Variable
@@ -56,7 +90,7 @@ export function getSessionToken() {
     console.error('Warning: Failed to read session file:', err.message);
   }
 
-  // 3. Zero-Click Auto Browser Extraction
+  // 3. Zero-Click Auto Browser Extraction (Running browser tabs)
   try {
     const extracted = extractFromRunningBrowsers();
     if (extracted && extracted.token) {
@@ -66,6 +100,17 @@ export function getSessionToken() {
     }
   } catch (err) {
     // Silently continue to fallback
+  }
+
+  // 4. Zero-Click Auto Extraction from ~/Downloads HAR dumps
+  try {
+    const harToken = extractFromDownloadsHar();
+    if (harToken) {
+      updateSession(harToken);
+      return harToken;
+    }
+  } catch (err) {
+    // Silently continue
   }
 
   return null;

@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "EasyTrader AI Sync",
+  "version": "1.2.0",
+  "description": "همگام‌سازی خودکار و بلادرنگ نشست کارگزاری مفید با هوش مصنوعی و Antigravity MCP",
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://d.easytrader.ir/*",
+    "https://*.easytrader.ir/*",
+    "http://127.0.0.1:4821/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://d.easytrader.ir/*",
+        "https://*.easytrader.ir/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "EasyTrader AI Sync"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "easytrader-ai-sync@hesvm.ir",
+      "strict_min_version": "109.0"
+    }
+  }
+}
