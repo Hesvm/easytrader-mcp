@@ -223,7 +223,7 @@ export async function getOrderHistory({ page = 1, pageSize = 20, filters = [], s
   return res.data;
 }
 
-export async function createOrder({ symbolIsin, price, quantity, side = 0, validityType = 0, validityDate = null, orderFrom = 1 }) {
+export async function createOrder({ symbolIsin, price, quantity, side = 0, validityType = 0, validityDate = null, orderFrom = 33 }) {
   const client = createApiClient();
   const payload = {
     order: {
@@ -233,14 +233,14 @@ export async function createOrder({ symbolIsin, price, quantity, side = 0, valid
       side, // 0 = Buy, 1 = Sell
       validityType, // 0 = Day
       validityDate,
-      orderFrom // 1 = OrbisDesktop
+      orderFrom // 33 = EasyTrader Web
     }
   };
   const res = await client.post('/core/api/v2/order', payload);
   return res.data;
 }
 
-export async function updateOrder({ orderId, symbolIsin, price, quantity, side = 0, validityType = 0, validityDate = null, orderFrom = 1 }) {
+export async function updateOrder({ orderId, symbolIsin, price, quantity, side = 0, validityType = 0, validityDate = null, orderFrom = 33 }) {
   const client = createApiClient();
   const payload = {
     modifyOrder: {
