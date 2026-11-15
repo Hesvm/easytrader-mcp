@@ -1133,7 +1133,7 @@ export function createServer() {
 export async function runServer() {
   // Automatically start background loopback auth bridge for WebExtension / Bookmarklet 1-click sync
   try {
-    startBridge({ quiet: true });
+    startBridge({ quiet: true, unref: true });
   } catch {}
 
   const server = createServer();

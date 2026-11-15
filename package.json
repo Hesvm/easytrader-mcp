@@ -10,7 +10,9 @@
   "scripts": {
     "start": "node ./bin/cli.js",
     "login": "node ./bin/cli.js login",
-    "bridge": "node scripts/bridge.js",
+    "bridge": "node ./bin/cli.js bridge",
+    "bridge:install": "node scripts/install-bridge-daemon.js",
+    "bridge:uninstall": "node scripts/uninstall-bridge-daemon.js",
     "test": "node src/test-connection.js"
   },
   "keywords": [

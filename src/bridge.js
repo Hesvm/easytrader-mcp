@@ -121,8 +121,10 @@ export function startBridge(options = {}) {
     }
   });
 
-  // unref server so it won't prevent graceful exit if running inside background MCP
-  if (server.unref) server.unref();
+  // unref server only if explicitly requested (e.g. embedded inside background MCP)
+  if (options.unref && server.unref) {
+    server.unref();
+  }
 
   return server;
 }
